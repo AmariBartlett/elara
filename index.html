@@ -1,0 +1,1111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ELARA</title>
+<style>
+:root{
+  --bg:#070912;
+  --panel:rgba(16,20,34,.72);
+  --panel-strong:rgba(17,22,38,.92);
+  --line:rgba(255,255,255,.10);
+  --text:#f5f7fb;
+  --muted:#9aa6bb;
+  --accent:#9f7aea;
+  --accent2:#6fd3ff;
+  --danger:#ff4f6d;
+  --shadow:0 18px 60px rgba(0,0,0,.36);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+body{position:relative}
+body:before,body:after{
+  content:"";position:fixed;inset:-20%;pointer-events:none;filter:blur(75px);opacity:.7;
+  animation:drift 22s ease-in-out infinite alternate;
+}
+body:before{background:radial-gradient(circle at 25% 35%,color-mix(in srgb,var(--accent) 36%,transparent),transparent 28%)}
+body:after{background:radial-gradient(circle at 72% 30%,color-mix(in srgb,var(--accent2) 26%,transparent),transparent 26%);animation-duration:29s}
+@keyframes drift{from{transform:translate3d(-2%,-1%,0) scale(1)}to{transform:translate3d(3%,2%,0) scale(1.08)}}
+.stars{position:fixed;inset:0;pointer-events:none;background-image:
+radial-gradient(circle at 10% 20%,rgba(255,255,255,.45) 0 1px,transparent 1.5px),
+radial-gradient(circle at 28% 62%,rgba(255,255,255,.28) 0 1px,transparent 1.5px),
+radial-gradient(circle at 60% 18%,rgba(255,255,255,.30) 0 1px,transparent 1.5px),
+radial-gradient(circle at 86% 72%,rgba(255,255,255,.38) 0 1px,transparent 1.5px),
+radial-gradient(circle at 73% 49%,rgba(255,255,255,.23) 0 1px,transparent 1.5px);
+background-size:360px 260px;opacity:.55}
+#boot{position:fixed;inset:0;z-index:50;background:#060811;display:flex;align-items:center;justify-content:center;transition:opacity .8s ease,visibility .8s}
+#boot.hide{opacity:0;visibility:hidden}
+.boot-inner{text-align:center}
+.moon{width:84px;height:84px;border:2px solid rgba(255,255,255,.75);border-radius:50%;margin:0 auto 20px;position:relative;box-shadow:0 0 35px color-mix(in srgb,var(--accent) 45%,transparent)}
+.moon:after{content:"";position:absolute;width:68px;height:68px;border-radius:50%;background:#060811;left:26px;top:-7px}
+.star{position:absolute;right:-12px;top:2px;color:#fff;font-size:25px;text-shadow:0 0 18px var(--accent2);z-index:2}
+.boot-title{font-family:Georgia,Times New Roman,serif;letter-spacing:.38em;margin-left:.38em;font-size:36px}
+.boot-sub{margin-top:10px;font-size:11px;color:var(--muted);letter-spacing:.24em;text-transform:uppercase}
+.loader{width:220px;height:2px;background:rgba(255,255,255,.10);margin:24px auto 0;overflow:hidden}
+.loader i{display:block;width:42%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));animation:load 1.8s ease-in-out infinite}
+@keyframes load{from{transform:translateX(-120%)}to{transform:translateX(330%)}}
+
+.app{height:100%;padding:12px;display:grid;grid-template-columns:345px 1fr;grid-template-rows:1fr 48px;gap:12px;position:relative;z-index:2}
+.panel{background:var(--panel);backdrop-filter:blur(22px);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+.sidebar{grid-row:1;grid-column:1;padding:20px;display:flex;flex-direction:column;overflow:hidden}
+.brand{display:flex;align-items:center;justify-content:space-between}
+.brand-left{display:flex;align-items:center;gap:10px}
+.brand-mark{width:28px;height:28px;border:1px solid rgba(255,255,255,.65);border-radius:50%;position:relative}
+.brand-mark:after{content:"";position:absolute;width:22px;height:22px;border-radius:50%;background:var(--panel-strong);left:9px;top:-3px}
+.brand-name{font-family:Georgia,Times New Roman,serif;font-size:18px;letter-spacing:.28em;margin-left:.28em}
+.icon-btn{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);border-radius:10px;height:32px;min-width:32px;cursor:pointer}
+.greeting{margin-top:25px;color:#dbe2ef;font-size:15px}
+.time{font-size:68px;font-weight:720;letter-spacing:-3px;line-height:1;margin-top:8px;font-variant-numeric:tabular-nums}
+.date{font-size:17px;color:var(--muted);margin-top:8px}
+.weather{margin-top:20px;padding:15px;border:1px solid var(--line);background:rgba(255,255,255,.035);border-radius:16px}
+.weather-top{display:flex;justify-content:space-between;align-items:flex-start}
+.weather-city{font-size:16px;font-weight:700}
+.weather-cond{font-size:13px;color:var(--muted);margin-top:2px}
+.weather-icon{font-size:31px}
+.temp{font-size:48px;font-weight:760;margin-top:10px}
+.weather-detail{font-size:13px;color:var(--muted)}
+.quote{margin-top:auto;border-top:1px solid var(--line);padding-top:15px;font-size:11px;color:var(--muted);line-height:1.5}
+
+.main{grid-row:1;grid-column:2;display:grid;grid-template-rows:62px 1fr;overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--line)}
+.section-title{font-size:21px;font-weight:750}
+.live{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--danger);box-shadow:0 0 12px var(--danger)}
+.content{display:grid;grid-template-columns:1.5fr .9fr;gap:12px;padding:12px;min-height:0}
+.news-list{display:grid;grid-template-rows:repeat(3,1fr);gap:10px;min-height:0}
+.story{padding:13px 15px;border-radius:15px;border:1px solid var(--line);background:rgba(255,255,255,.028);display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:.16s ease;min-height:0}
+.story:hover{transform:translateY(-1px);background:rgba(255,255,255,.045)}
+.story-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
+.story-title{font-size:19px;font-weight:700;line-height:1.22;margin:5px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.story-source{font-size:12px;color:#c7cfdd}
+.side-stack{display:grid;grid-template-rows:1fr 1fr;gap:9px;min-height:0}
+.mini{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:15px;padding:14px;overflow:hidden}
+.mini h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.theme{border:1px solid var(--line);border-radius:11px;padding:10px;background:rgba(255,255,255,.035);color:var(--text);font-size:11px;cursor:pointer;text-align:left}
+.theme b{display:block;font-size:12px;margin-bottom:2px}
+.theme span{color:var(--muted)}
+.theme.active{outline:1px solid var(--accent)}
+.status-row{display:flex;justify-content:space-between;gap:8px;margin:11px 0;font-size:13px}
+.status-row span:first-child{color:var(--muted)}
+.status-row b{font-weight:700}
+.footer{grid-column:1/3;grid-row:2;display:flex;align-items:center;gap:12px;padding:0 16px;overflow:hidden}
+.breaking{font-size:10px;font-weight:900;letter-spacing:.1em;color:var(--danger)}
+.ticker{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dce3ee;flex:1}
+
+.settings{position:fixed;z-index:40;right:16px;top:16px;width:430px;max-height:calc(100vh - 32px);padding:0;background:rgba(10,13,23,.97);backdrop-filter:blur(24px);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);transform:translateX(480px);transition:.25s ease;overflow:hidden}
+.settings.open{transform:translateX(0)}
+.settings-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px}
+.settings-head h2{margin:2px 0 0;font-size:20px}
+.settings-kicker{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.settings-tabs{display:flex;gap:5px;padding:0 12px 10px;overflow-x:auto;border-bottom:1px solid var(--line)}
+.settings-tab{border:1px solid transparent;background:transparent;color:var(--muted);padding:8px 10px;border-radius:9px;font-size:10px;cursor:pointer;white-space:nowrap}
+.settings-tab.active{background:rgba(255,255,255,.06);border-color:var(--line);color:var(--text)}
+.settings-body{padding:14px 18px;max-height:470px;overflow:auto}
+.settings-pane{display:none}.settings-pane.active{display:block}
+.field{margin:13px 0}.field label{display:block;font-size:11px;color:#c9d1df;margin-bottom:6px;font-weight:700}
+.field small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.field input[type="text"],.field input:not([type]),.field select,.field input#weatherInput,.field input#nameInput{
+ width:100%;height:39px;border:1px solid var(--line);background:#0e1320;color:var(--text);border-radius:10px;padding:0 11px;outline:none
+}
+.field select{appearance:auto}
+.switch-field{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.switch-field label{margin:0}
+.switch-field input[type="checkbox"]{width:18px;height:18px;accent-color:var(--accent)}
+.segmented{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.segmented button{height:36px;border:1px solid var(--line);background:#111725;color:var(--muted);border-radius:10px;cursor:pointer;font-size:11px}
+.segmented button.active{background:var(--accent);color:white;border-color:transparent}
+.field input[type="range"]{width:100%;accent-color:var(--accent)}
+.settings-actions{display:flex;gap:8px;padding:12px 18px 16px;border-top:1px solid var(--line)}
+.settings-actions button{flex:1;height:39px;border:1px solid var(--line);border-radius:10px;background:#151b2b;color:var(--text);cursor:pointer}
+.settings-actions .primary{background:var(--accent);border-color:transparent;color:white}
+body.no-animations *,body.no-animations *:before,body.no-animations *:after{animation:none!important;transition:none!important}
+body.day-mode{filter:brightness(1.08)}
+body.night-mode{filter:brightness(.88)}
+
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.choice-grid.three{grid-template-columns:repeat(3,1fr)}
+.choice-grid.four{grid-template-columns:repeat(4,1fr)}
+.choice-btn{min-height:36px;border:1px solid var(--line);background:#111725;color:var(--muted);border-radius:10px;cursor:pointer;font-size:10px;padding:7px 8px}
+.choice-btn.active{background:var(--accent);color:#fff;border-color:transparent}
+.text-entry-wrap{display:grid;grid-template-columns:1fr auto auto;gap:6px}
+.text-entry-wrap input{min-width:0}
+.small-action{height:39px;border:1px solid var(--line);background:#151b2b;color:var(--text);border-radius:10px;padding:0 10px;font-size:10px;cursor:pointer}
+.small-action.primary-lite{background:color-mix(in srgb,var(--accent) 25%,#151b2b)}
+.field-note{font-size:9px;color:var(--muted);margin-top:5px;line-height:1.35}
+
+
+.hidden{display:none!important}
+.media-layout{display:block;padding:12px;min-height:0}
+.spotify-module{height:100%;min-height:0}
+.spotify-connect-card,.spotify-idle{height:100%;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.035),rgba(255,255,255,.018));display:flex;align-items:center;justify-content:center;gap:28px;padding:32px;text-align:left}
+.spotify-glyph{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:54px;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--accent2) 30%,transparent),rgba(255,255,255,.035));border:1px solid var(--line);box-shadow:0 0 50px color-mix(in srgb,var(--accent) 20%,transparent)}
+.spotify-connect-copy{max-width:560px}.spotify-connect-copy h2,.spotify-idle h2{font-size:32px;margin:5px 0 8px}.spotify-connect-copy p,.spotify-idle p{color:var(--muted);font-size:14px;line-height:1.5}
+.spotify-primary,.spotify-secondary{height:42px;padding:0 18px;border-radius:11px;cursor:pointer;font-weight:700;margin-right:7px}
+.spotify-primary{background:var(--accent);border:0;color:white}.spotify-secondary{background:#141a28;border:1px solid var(--line);color:var(--text)}
+.spotify-note{font-size:10px;color:var(--muted);margin-top:12px;max-width:540px;line-height:1.45}
+.spotify-player{height:100%;display:grid;grid-template-columns:minmax(260px,.8fr) 1.35fr .85fr;gap:12px;min-height:0}
+.art-wrap{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0d111b;min-width:0}
+.art-wrap img{width:100%;height:100%;object-fit:cover;display:block;position:relative;z-index:2}
+.art-glow{position:absolute;inset:-20%;background:radial-gradient(circle,var(--accent),transparent 65%);filter:blur(35px);opacity:.45;z-index:1}
+.track-panel,.queue-panel{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.026);padding:22px;min-width:0;overflow:hidden}
+.track-panel{display:flex;flex-direction:column;justify-content:center}
+.eyebrow{font-size:10px;letter-spacing:.16em;color:var(--muted);font-weight:850}
+.spotify-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#1ed760;margin-right:7px;box-shadow:0 0 10px #1ed760}
+.track-title{font-size:34px;font-weight:800;line-height:1.05;margin-top:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-artist{font-size:19px;color:#dce3ee;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-album{font-size:12px;color:var(--muted);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.progress-wrap{margin-top:24px}.progress-bar{height:7px;background:#1b2230;border-radius:99px;overflow:hidden;cursor:pointer}.progress-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px}
+.progress-times{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:6px}
+.player-controls{display:grid;grid-template-columns:44px 54px 64px 54px 44px;gap:8px;justify-content:center;margin-top:20px}
+.player-controls button{height:44px;border-radius:50%;border:1px solid var(--line);background:#141b29;color:var(--text);font-size:17px;cursor:pointer}
+.player-controls .play-main{height:56px;width:56px;align-self:center;background:var(--accent);border-color:transparent;color:#fff;font-size:20px}
+.player-controls button.active{outline:2px solid var(--accent);color:white}
+.device-strip{margin-top:22px;border-top:1px solid var(--line);padding-top:14px;display:flex;justify-content:space-between;align-items:end;gap:14px;font-size:12px}
+.device-strip b{display:block;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:330px}
+.device-label{font-size:9px;letter-spacing:.14em;color:var(--muted)}.volume-readout{font-size:18px;font-weight:800}
+.queue-panel{display:flex;flex-direction:column}.queue-head{display:flex;justify-content:space-between;align-items:start}.queue-head h3{font-size:22px;margin:5px 0 12px}.tiny-btn{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:#141a27;color:var(--text);cursor:pointer}
+.queue-list{display:flex;flex-direction:column;gap:8px;overflow:hidden}.queue-item{display:grid;grid-template-columns:38px 1fr;gap:9px;align-items:center;padding:8px;border-radius:11px;background:rgba(255,255,255,.03)}
+.queue-item img{width:38px;height:38px;border-radius:7px;object-fit:cover}.queue-item b,.queue-item span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.queue-item b{font-size:11px}.queue-item span{font-size:9px;color:var(--muted);margin-top:2px}
+.queue-empty{color:var(--muted);font-size:11px;padding:14px 0}
+.spotify-idle{flex-direction:column;text-align:center}.idle-actions{margin-top:10px}
+.news-module{height:100%;display:grid;grid-template-columns:1.5fr .9fr;gap:12px;min-height:0}
+.copy-row{display:grid;grid-template-columns:1fr auto;gap:6px}.copy-row code{display:flex;align-items:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#0e1320;border:1px solid var(--line);border-radius:10px;padding:0 10px;font-size:9px;color:#c8d2e2}
+@media(max-width:1500px){.spotify-player{grid-template-columns:235px 1.25fr .8fr}.track-title{font-size:28px}.track-artist{font-size:16px}.track-panel,.queue-panel{padding:15px}.spotify-connect-card{padding:20px}}
+
+@media(max-width:1500px){
+ .app{grid-template-columns:285px 1fr}.time{font-size:56px}.content{grid-template-columns:1.65fr .8fr}.story-title{font-size:16px}.weather{margin-top:14px}.sidebar{padding:16px}
+}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div id="boot">
+  <div class="boot-inner">
+    <div class="moon"><span class="star">✦</span></div>
+    <div class="boot-title">ELARA</div>
+    <div class="boot-sub">Personal Interface</div>
+    <div class="loader"><i></i></div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="panel sidebar">
+    <div class="brand">
+      <div class="brand-left"><div class="brand-mark"></div><div class="brand-name">ELARA</div></div>
+      <button class="icon-btn" id="settingsBtn" title="Settings">⚙</button>
+    </div>
+    <div class="greeting" id="greeting">Good afternoon.</div>
+    <div class="time" id="time">--:--</div>
+    <div class="date" id="date">Loading date…</div>
+
+    <div class="weather">
+      <div class="weather-top">
+        <div><div class="weather-city" id="city">Weather</div><div class="weather-cond" id="condition">Loading…</div></div>
+        <div class="weather-icon" id="weatherIcon">◌</div>
+      </div>
+      <div class="temp" id="temp">--°</div>
+      <div class="weather-detail" id="weatherDetail">Feels --° • Wind -- mph</div>
+    </div>
+
+    <div class="quote">“Quietly useful. Beautifully present.”<br>ELARA v1.4</div>
+  </aside>
+
+  <main class="panel main">
+    <div class="topbar">
+      <div class="section-title" id="sectionTitle">Spotify</div>
+      <div class="live"><i></i><span id="newsStatus">READY</span></div>
+    </div>
+
+    <div class="content media-layout">
+      <section id="spotifyModule" class="spotify-module">
+        <div id="spotifyDisconnected" class="spotify-connect-card">
+          <div class="spotify-glyph">♫</div>
+          <div class="spotify-connect-copy">
+            <div class="eyebrow">ELARA MEDIA</div>
+            <h2>Connect Spotify</h2>
+            <p>Show your current track, album art, playback progress, active device, queue, and controls.</p>
+            <button class="spotify-primary" id="spotifyConnectBtn" type="button">Connect Spotify</button>
+            <button class="spotify-secondary" id="spotifySetupBtn" type="button">Spotify Setup</button>
+            <div class="spotify-note" id="spotifyConnectNote">A Spotify Client ID is required once. No password or client secret is stored by ELARA.</div>
+          </div>
+        </div>
+
+        <div id="spotifyPlayer" class="spotify-player hidden">
+          <div class="art-wrap">
+            <img id="albumArt" alt="Album artwork" />
+            <div class="art-glow" id="artGlow"></div>
+          </div>
+
+          <div class="track-panel">
+            <div class="eyebrow"><span class="spotify-dot"></span> NOW PLAYING</div>
+            <div class="track-title" id="trackTitle">Nothing playing</div>
+            <div class="track-artist" id="trackArtist">Spotify</div>
+            <div class="track-album" id="trackAlbum">—</div>
+
+            <div class="progress-wrap">
+              <div class="progress-bar" id="progressBar"><i id="progressFill"></i></div>
+              <div class="progress-times"><span id="progressNow">0:00</span><span id="progressTotal">0:00</span></div>
+            </div>
+
+            <div class="player-controls">
+              <button id="shuffleBtn" type="button" title="Shuffle">⌘</button>
+              <button id="prevTrackBtn" type="button" title="Previous">◀</button>
+              <button class="play-main" id="playPauseBtn" type="button" title="Play / Pause">▶</button>
+              <button id="nextTrackBtn" type="button" title="Next">▶</button>
+              <button id="repeatBtn" type="button" title="Repeat">↻</button>
+            </div>
+
+            <div class="device-strip">
+              <div>
+                <span class="device-label">PLAYING ON</span>
+                <b id="spotifyDevice">No active device</b>
+              </div>
+              <div class="volume-readout" id="spotifyVolume">--%</div>
+            </div>
+          </div>
+
+          <aside class="queue-panel">
+            <div class="queue-head">
+              <div><div class="eyebrow">UP NEXT</div><h3>Queue</h3></div>
+              <button class="tiny-btn" id="spotifyRefreshBtn" type="button">↻</button>
+            </div>
+            <div id="queueList" class="queue-list">
+              <div class="queue-empty">Your next tracks will appear here.</div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="spotify-idle hidden" id="spotifyIdle">
+          <div class="spotify-glyph">♫</div>
+          <h2>Spotify is connected</h2>
+          <p>Start playing something on Spotify and ELARA will pick it up.</p>
+          <div class="idle-actions">
+            <button class="spotify-primary" id="spotifyRefreshIdleBtn" type="button">Refresh Playback</button>
+            <button class="spotify-secondary" id="spotifyDisconnectBtn" type="button">Disconnect</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="newsModule" class="news-module hidden">
+        <div class="news-list" id="newsList"><div class="error">Loading AP headlines…</div></div>
+        <div class="side-stack">
+          <section class="mini">
+            <h3>Today</h3>
+            <div class="status-row"><span>Location</span><b id="todayLocation">Fairbanks</b></div>
+            <div class="status-row"><span>Conditions</span><b id="todayCondition">--</b></div>
+            <div class="status-row"><span>Feels like</span><b id="todayFeels">--°</b></div>
+            <div class="status-row"><span>Wind</span><b id="todayWind">--</b></div>
+            <div class="status-row"><span>Clock</span><b id="todayClockMode">24-hour</b></div>
+          </section>
+          <section class="mini">
+            <h3>ELARA Status • v1.4</h3>
+            <div class="status-row"><span>News</span><b id="statusNews">Standby</b></div>
+            <div class="status-row"><span>Weather</span><b id="statusWeather">Connecting</b></div>
+            <div class="status-row"><span>Theme</span><b id="statusTheme">Nebula</b></div>
+            <div class="status-row"><span>Module</span><b id="statusModule">Spotify</b></div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="panel footer">
+    <div class="breaking" id="footerLabel">ELARA</div>
+    <div class="ticker" id="ticker">ELARA is initializing your news briefing…</div>
+  </footer>
+</div>
+
+<div class="settings" id="settings">
+  <div class="settings-head">
+    <div>
+      <div class="settings-kicker">ELARA v1.4</div>
+      <h2>Settings</h2>
+    </div>
+    <button class="icon-btn" id="closeSettingsX">✕</button>
+  </div>
+
+  <div class="settings-tabs">
+    <button class="settings-tab active" data-pane="general">General</button>
+    <button class="settings-tab" data-pane="timepane">Time</button>
+    <button class="settings-tab" data-pane="weatherpane">Weather</button>
+    <button class="settings-tab" data-pane="newspane">News</button>
+    <button class="settings-tab" data-pane="appearancepane">Appearance</button>
+    <button class="settings-tab" data-pane="mediapane">Media</button>
+  </div>
+
+  <div class="settings-body">
+    <section class="settings-pane active" id="pane-general">
+      <div class="field">
+        <label>Name used in greeting</label>
+        <div class="text-entry-wrap">
+          <input id="nameInput" placeholder="Amari" />
+          <button class="small-action" id="editNameBtn" type="button">Edit</button>
+          <button class="small-action primary-lite" id="pasteNameBtn" type="button">Paste</button>
+        </div>
+        <div class="field-note">iCUE may block direct typing. “Edit” opens a text prompt; “Paste” reads your clipboard.</div>
+      </div>
+      <div class="field">
+        <label>Profile</label>
+        <div class="choice-grid four" data-choice="profile">
+          <button class="choice-btn" type="button" data-value="default">Default</button>
+          <button class="choice-btn" type="button" data-value="gaming">Gaming</button>
+          <button class="choice-btn" type="button" data-value="work">Work</button>
+          <button class="choice-btn" type="button" data-value="night">Night</button>
+        </div>
+      </div>
+      <div class="field switch-field">
+        <div><label>Greeting</label><small>Show “Good morning / afternoon / evening”</small></div>
+        <input type="checkbox" id="greetingEnabled" />
+      </div>
+    </section>
+
+    <section class="settings-pane" id="pane-timepane">
+      <div class="field">
+        <label>Clock format</label>
+        <div class="segmented">
+          <button type="button" data-setting="clockFormat" data-value="24h">24-Hour</button>
+          <button type="button" data-setting="clockFormat" data-value="12h">12-Hour</button>
+        </div>
+      </div>
+      <div class="field switch-field">
+        <div><label>Show seconds</label><small>Display HH:MM:SS</small></div>
+        <input type="checkbox" id="showSeconds" />
+      </div>
+      <div class="field switch-field">
+        <div><label>Leading zero</label><small>Example: 05:09 instead of 5:09</small></div>
+        <input type="checkbox" id="leadingZero" />
+      </div>
+      <div class="field">
+        <label>Time zone</label>
+        <div class="choice-grid" data-choice="timezone">
+          <button class="choice-btn" type="button" data-value="auto">Auto</button>
+          <button class="choice-btn" type="button" data-value="America/Anchorage">Alaska</button>
+          <button class="choice-btn" type="button" data-value="America/Los_Angeles">Pacific</button>
+          <button class="choice-btn" type="button" data-value="America/Denver">Mountain</button>
+          <button class="choice-btn" type="button" data-value="America/Chicago">Central</button>
+          <button class="choice-btn" type="button" data-value="America/New_York">Eastern</button>
+          <button class="choice-btn" type="button" data-value="UTC">UTC</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-pane" id="pane-weatherpane">
+      <div class="field">
+        <label>Weather location</label>
+        <div class="text-entry-wrap">
+          <input id="weatherInput" placeholder="Fairbanks, Alaska" />
+          <button class="small-action" id="editWeatherBtn" type="button">Edit</button>
+          <button class="small-action primary-lite" id="pasteWeatherBtn" type="button">Paste</button>
+        </div>
+        <div class="field-note">Use “Edit” if iCUE won’t pass keyboard input to the field.</div>
+      </div>
+      <div class="field">
+        <label>Temperature</label>
+        <div class="segmented">
+          <button type="button" data-setting="tempUnit" data-value="fahrenheit">°F</button>
+          <button type="button" data-setting="tempUnit" data-value="celsius">°C</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Wind speed</label>
+        <div class="segmented">
+          <button type="button" data-setting="windUnit" data-value="mph">mph</button>
+          <button type="button" data-setting="windUnit" data-value="kmh">km/h</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-pane" id="pane-newspane">
+      <div class="field">
+        <label>AP News category</label>
+        <div class="choice-grid three" data-choice="newsCategory">
+          <button class="choice-btn" type="button" data-value="">Top</button>
+          <button class="choice-btn" type="button" data-value="world">World</button>
+          <button class="choice-btn" type="button" data-value="US">U.S.</button>
+          <button class="choice-btn" type="button" data-value="politics">Politics</button>
+          <button class="choice-btn" type="button" data-value="technology">Tech</button>
+          <button class="choice-btn" type="button" data-value="business">Business</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Refresh interval</label>
+        <div class="choice-grid four" data-choice="newsRefresh">
+          <button class="choice-btn" type="button" data-value="5">5m</button>
+          <button class="choice-btn" type="button" data-value="10">10m</button>
+          <button class="choice-btn" type="button" data-value="15">15m</button>
+          <button class="choice-btn" type="button" data-value="30">30m</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-pane" id="pane-appearancepane">
+      <div class="field">
+        <label>Theme</label>
+        <div class="choice-grid three" data-choice="theme">
+          <button class="choice-btn" type="button" data-value="nebula">Nebula</button>
+          <button class="choice-btn" type="button" data-value="cherry">Cherry</button>
+          <button class="choice-btn" type="button" data-value="arctic">Arctic</button>
+          <button class="choice-btn" type="button" data-value="lunar">Lunar</button>
+          <button class="choice-btn" type="button" data-value="eclipse">Eclipse</button>
+          <button class="choice-btn" type="button" data-value="ember">Ember</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Day / night behavior</label>
+        <div class="choice-grid three" data-choice="dayNightMode">
+          <button class="choice-btn" type="button" data-value="auto">Automatic</button>
+          <button class="choice-btn" type="button" data-value="day">Day</button>
+          <button class="choice-btn" type="button" data-value="night">Night</button>
+        </div>
+      </div>
+      <div class="field switch-field">
+        <div><label>Animations</label><small>Nebula drift and interface transitions</small></div>
+        <input type="checkbox" id="animationsEnabled" />
+      </div>
+      <div class="field">
+        <label>Panel transparency</label>
+        <input id="panelTransparency" type="range" min="55" max="96" step="1" />
+      </div>
+    </section>
+    <section class="settings-pane" id="pane-mediapane">
+      <div class="field">
+        <label>Main module</label>
+        <div class="choice-grid" data-choice="mainModule">
+          <button class="choice-btn" type="button" data-value="spotify">Spotify</button>
+          <button class="choice-btn" type="button" data-value="news">AP News</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Spotify Client ID</label>
+        <div class="text-entry-wrap">
+          <input id="spotifyClientIdInput" placeholder="Paste Spotify Client ID" />
+          <button class="small-action primary-lite" id="pasteSpotifyClientBtn" type="button">Paste</button>
+        </div>
+        <div class="field-note">Create a Spotify Developer app, then paste only its Client ID here. Do not enter a Client Secret.</div>
+      </div>
+      <div class="field">
+        <label>Redirect URI to register with Spotify</label>
+        <div class="copy-row">
+          <code id="spotifyRedirectUri">Loading…</code>
+          <button class="small-action" id="copyRedirectBtn" type="button">Copy</button>
+        </div>
+        <div class="field-note">This must match Spotify’s app settings exactly.</div>
+      </div>
+      <div class="field">
+        <label>Spotify account</label>
+        <div class="choice-grid">
+          <button class="choice-btn" id="settingsConnectSpotifyBtn" type="button">Connect / Reconnect</button>
+          <button class="choice-btn" id="settingsDisconnectSpotifyBtn" type="button">Disconnect</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="settings-actions">
+    <button id="closeSettings">Cancel</button>
+    <button class="primary" id="saveSettings">Save Changes</button>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const SETTINGS_KEY = "elara.settings.v1.1";
+
+const defaultSettings = {
+  weather:"Fairbanks, Alaska",
+  name:"",
+  greetingEnabled:true,
+  profile:"default",
+  clockFormat:"24h",
+  showSeconds:false,
+  leadingZero:true,
+  timezone:"auto",
+  tempUnit:"fahrenheit",
+  windUnit:"mph",
+  newsCategory:"",
+  newsRefresh:10,
+  theme:"nebula",
+  dayNightMode:"auto",
+  animationsEnabled:true,
+  panelTransparency:72,
+  mainModule:"spotify",
+  spotifyClientId:""
+};
+
+let settings;
+try { settings = {...defaultSettings, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}")}; }
+catch(e) { settings = {...defaultSettings}; }
+
+const themes = {
+  nebula:{bg:"#070912",panel:"16,20,34",strong:"rgba(17,22,38,.92)",accent:"#9f7aea",accent2:"#6fd3ff"},
+  cherry:{bg:"#130b12",panel:"35,18,31",strong:"rgba(39,19,34,.94)",accent:"#f47cab",accent2:"#ffd0df"},
+  arctic:{bg:"#061019",panel:"11,30,43",strong:"rgba(10,31,47,.94)",accent:"#78d7ff",accent2:"#4f7dff"},
+  lunar:{bg:"#080910",panel:"23,24,32",strong:"rgba(26,27,37,.95)",accent:"#c9ced8",accent2:"#7783ff"},
+  eclipse:{bg:"#0c0711",panel:"29,15,40",strong:"rgba(32,15,46,.95)",accent:"#bd68ff",accent2:"#4d8cff"},
+  ember:{bg:"#120908",panel:"39,20,18",strong:"rgba(43,21,18,.95)",accent:"#ff6b5f",accent2:"#ffb452"}
+};
+
+let newsTimer = null;
+let spotifyTimer=null;
+let spotifyProgressTimer=null;
+let spotifyPlayback=null;
+const SPOTIFY_AUTH_KEY="elara.spotify.auth.v1";
+const SPOTIFY_PKCE_KEY="elara.spotify.pkce.v1";
+const SPOTIFY_SCOPES=["user-read-playback-state","user-read-currently-playing","user-modify-playback-state"];
+
+function spotifyRedirectUri(){
+  return location.origin + location.pathname;
+}
+function getSpotifyAuth(){
+  try{return JSON.parse(localStorage.getItem(SPOTIFY_AUTH_KEY)||"null")}catch(e){return null}
+}
+function setSpotifyAuth(v){
+  if(v)localStorage.setItem(SPOTIFY_AUTH_KEY,JSON.stringify(v));
+  else localStorage.removeItem(SPOTIFY_AUTH_KEY);
+}
+function bytesToBase64Url(bytes){
+  let s="";bytes.forEach(b=>s+=String.fromCharCode(b));
+  return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+async function sha256(s){
+  return new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)));
+}
+function randomString(n=64){
+  const b=new Uint8Array(n);crypto.getRandomValues(b);return bytesToBase64Url(b).slice(0,n);
+}
+async function beginSpotifyLogin(){
+  const clientId=(settings.spotifyClientId||"").trim();
+  if(!clientId){
+    openSettingsPane("mediapane");
+    if($("spotifyConnectNote")) $("spotifyConnectNote").textContent="Add your Spotify Client ID in Settings → Media first.";
+    return;
+  }
+  const verifier=randomString(64), state=randomString(24);
+  const challenge=bytesToBase64Url(await sha256(verifier));
+  localStorage.setItem(SPOTIFY_PKCE_KEY,JSON.stringify({verifier,state,created:Date.now()}));
+  const u=new URL("https://accounts.spotify.com/authorize");
+  u.searchParams.set("client_id",clientId);
+  u.searchParams.set("response_type","code");
+  u.searchParams.set("redirect_uri",spotifyRedirectUri());
+  u.searchParams.set("scope",SPOTIFY_SCOPES.join(" "));
+  u.searchParams.set("code_challenge_method","S256");
+  u.searchParams.set("code_challenge",challenge);
+  u.searchParams.set("state",state);
+  u.searchParams.set("show_dialog","true");
+
+  // Spotify authorization pages generally should not be embedded. Open a new browsing context.
+  const w=window.open(u.toString(),"_blank");
+  if(!w && $("spotifyConnectNote")) $("spotifyConnectNote").textContent="iCUE blocked the login window. Open ELARA in your normal browser once and press Connect Spotify there.";
+}
+
+async function handleSpotifyCallback(){
+  const u=new URL(location.href);
+  const code=u.searchParams.get("code"), returnedState=u.searchParams.get("state");
+  if(!code)return;
+  let pkce=null;
+  try{pkce=JSON.parse(localStorage.getItem(SPOTIFY_PKCE_KEY)||"null")}catch(e){}
+  if(!pkce || pkce.state!==returnedState){
+    alert("ELARA could not verify this Spotify login session. Start Connect Spotify again from the same browser.");
+    return;
+  }
+  try{
+    const body=new URLSearchParams({
+      client_id:settings.spotifyClientId,
+      grant_type:"authorization_code",
+      code,
+      redirect_uri:spotifyRedirectUri(),
+      code_verifier:pkce.verifier
+    });
+    const r=await fetch("https://accounts.spotify.com/api/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error_description||data.error||"Token exchange failed");
+    setSpotifyAuth({
+      access_token:data.access_token,
+      refresh_token:data.refresh_token,
+      expires_at:Date.now()+data.expires_in*1000-30000
+    });
+    localStorage.removeItem(SPOTIFY_PKCE_KEY);
+    u.searchParams.delete("code");u.searchParams.delete("state");
+    history.replaceState({},document.title,u.pathname+u.search+u.hash);
+    renderModule();
+    loadSpotifyPlayback();
+  }catch(e){
+    alert("Spotify connection failed: "+e.message);
+  }
+}
+
+async function spotifyAccessToken(){
+  let auth=getSpotifyAuth();
+  if(!auth)return null;
+  if(auth.expires_at>Date.now()+5000)return auth.access_token;
+  if(!auth.refresh_token)return null;
+  const body=new URLSearchParams({
+    client_id:settings.spotifyClientId,
+    grant_type:"refresh_token",
+    refresh_token:auth.refresh_token
+  });
+  const r=await fetch("https://accounts.spotify.com/api/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
+  const data=await r.json();
+  if(!r.ok){setSpotifyAuth(null);return null}
+  auth={...auth,access_token:data.access_token,refresh_token:data.refresh_token||auth.refresh_token,expires_at:Date.now()+data.expires_in*1000-30000};
+  setSpotifyAuth(auth);return auth.access_token;
+}
+async function spotifyApi(path,opts={}){
+  const token=await spotifyAccessToken();
+  if(!token)throw new Error("NOT_CONNECTED");
+  const headers={...(opts.headers||{}),Authorization:"Bearer "+token};
+  const r=await fetch("https://api.spotify.com/v1"+path,{...opts,headers});
+  if(r.status===204)return null;
+  if(r.status===401){setSpotifyAuth(null);throw new Error("NOT_CONNECTED")}
+  if(!r.ok)throw new Error("Spotify API "+r.status);
+  const type=r.headers.get("content-type")||"";
+  return type.includes("application/json")?r.json():null;
+}
+function fmtMs(ms){
+  const s=Math.max(0,Math.floor((ms||0)/1000));return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+}
+function updateSpotifyProgress(){
+  if(!spotifyPlayback||!spotifyPlayback.item)return;
+  let pos=spotifyPlayback.progress_ms||0;
+  if(spotifyPlayback.is_playing) pos+=Date.now()-(spotifyPlayback._fetchedAt||Date.now());
+  pos=Math.min(pos,spotifyPlayback.item.duration_ms||pos);
+  $("progressNow").textContent=fmtMs(pos);
+  $("progressTotal").textContent=fmtMs(spotifyPlayback.item.duration_ms);
+  $("progressFill").style.width=((pos/(spotifyPlayback.item.duration_ms||1))*100)+"%";
+}
+async function loadSpotifyQueue(){
+  try{
+    const q=await spotifyApi("/me/player/queue");
+    const items=(q?.queue||[]).slice(0,4);
+    $("queueList").innerHTML=items.length?items.map(x=>{
+      const art=x.album?.images?.slice(-1)[0]?.url||"";
+      const artists=(x.artists||[]).map(a=>a.name).join(", ");
+      return `<div class="queue-item">${art?`<img src="${esc(art)}" alt="">`:"<div></div>"}<div><b>${esc(x.name)}</b><span>${esc(artists)}</span></div></div>`;
+    }).join(""):'<div class="queue-empty">Queue is empty.</div>';
+  }catch(e){
+    $("queueList").innerHTML='<div class="queue-empty">Queue unavailable.</div>';
+  }
+}
+async function loadSpotifyPlayback(){
+  if(settings.mainModule!=="spotify")return;
+  try{
+    const p=await spotifyApi("/me/player");
+    if(!p||!p.item){
+      $("spotifyDisconnected").classList.add("hidden");
+      $("spotifyPlayer").classList.add("hidden");
+      $("spotifyIdle").classList.remove("hidden");
+      $("newsStatus").textContent="CONNECTED";
+      $("ticker").textContent="Spotify connected • Start playback on any Spotify device.";
+      return;
+    }
+    spotifyPlayback={...p,_fetchedAt:Date.now()};
+    $("spotifyDisconnected").classList.add("hidden");
+    $("spotifyIdle").classList.add("hidden");
+    $("spotifyPlayer").classList.remove("hidden");
+
+    const item=p.item, artists=(item.artists||[]).map(a=>a.name).join(", ");
+    const art=item.album?.images?.[0]?.url||"";
+    $("trackTitle").textContent=item.name||"Unknown track";
+    $("trackArtist").textContent=artists||"Unknown artist";
+    $("trackAlbum").textContent=item.album?.name||"";
+    $("albumArt").src=art;
+    $("albumArt").style.display=art?"block":"none";
+    $("spotifyDevice").textContent=p.device?.name||"No active device";
+    $("spotifyVolume").textContent=(p.device?.volume_percent??"--")+"%";
+    $("playPauseBtn").textContent=p.is_playing?"Ⅱ":"▶";
+    $("shuffleBtn").classList.toggle("active",!!p.shuffle_state);
+    $("repeatBtn").classList.toggle("active",p.repeat_state&&p.repeat_state!=="off");
+    $("newsStatus").textContent=p.is_playing?"PLAYING":"PAUSED";
+    $("ticker").textContent=`${item.name} • ${artists}`;
+    updateSpotifyProgress();
+    loadSpotifyQueue();
+  }catch(e){
+    if(e.message==="NOT_CONNECTED"){
+      $("spotifyPlayer").classList.add("hidden");
+      $("spotifyIdle").classList.add("hidden");
+      $("spotifyDisconnected").classList.remove("hidden");
+      $("newsStatus").textContent="CONNECT";
+      $("ticker").textContent="Connect Spotify to bring ELARA Media online.";
+    }
+  }
+}
+async function spotifyCommand(path,method="POST"){
+  try{await spotifyApi(path,{method});setTimeout(loadSpotifyPlayback,350)}catch(e){}
+}
+function disconnectSpotify(){
+  setSpotifyAuth(null);
+  localStorage.removeItem(SPOTIFY_PKCE_KEY);
+  renderModule();
+}
+function scheduleSpotify(){
+  if(spotifyTimer)clearInterval(spotifyTimer);
+  spotifyTimer=setInterval(loadSpotifyPlayback,5000);
+  if(spotifyProgressTimer)clearInterval(spotifyProgressTimer);
+  spotifyProgressTimer=setInterval(updateSpotifyProgress,1000);
+}
+
+
+function applyTheme(){
+  const t=themes[settings.theme]||themes.nebula;
+  const r=document.documentElement.style;
+  const alpha=Math.max(.55,Math.min(.96,Number(settings.panelTransparency)/100));
+  r.setProperty("--bg",t.bg);
+  r.setProperty("--panel",`rgba(${t.panel},${alpha})`);
+  r.setProperty("--panel-strong",t.strong);
+  r.setProperty("--accent",t.accent);
+  r.setProperty("--accent2",t.accent2);
+  document.querySelectorAll(".theme").forEach(b=>b.classList.toggle("active",b.dataset.theme===settings.theme));
+  $("statusTheme").textContent=settings.theme[0].toUpperCase()+settings.theme.slice(1);
+}
+
+function applyMotion(){
+  document.body.classList.toggle("no-animations",!settings.animationsEnabled);
+}
+
+function currentHour(){
+  try{
+    if(settings.timezone==="auto") return new Date().getHours();
+    const parts=new Intl.DateTimeFormat("en-US",{timeZone:settings.timezone,hour:"2-digit",hourCycle:"h23"}).formatToParts(new Date());
+    return Number(parts.find(p=>p.type==="hour")?.value || new Date().getHours());
+  }catch(e){ return new Date().getHours(); }
+}
+
+function applyDayNight(){
+  document.body.classList.remove("day-mode","night-mode");
+  let mode=settings.dayNightMode;
+  if(mode==="auto"){
+    const h=currentHour();
+    mode=(h>=7 && h<19)?"day":"night";
+  }
+  document.body.classList.add(mode==="day"?"day-mode":"night-mode");
+}
+
+function formatClock(){
+  const d=new Date();
+  const opts={
+    hour:"numeric",
+    minute:"2-digit",
+    second:settings.showSeconds?"2-digit":undefined,
+    hour12:settings.clockFormat==="12h"
+  };
+  if(settings.timezone!=="auto") opts.timeZone=settings.timezone;
+  let out=d.toLocaleTimeString([],opts);
+  if(settings.clockFormat==="24h" && settings.leadingZero){
+    const first=out.match(/^\d{1,2}/)?.[0];
+    if(first && first.length===1) out="0"+out;
+  }
+  if(settings.clockFormat==="12h" && !settings.leadingZero) out=out.replace(/^0/,"");
+  return out;
+}
+
+function updateClock(){
+  const d=new Date();
+  const dateOpts={weekday:"long",month:"long",day:"numeric"};
+  if(settings.timezone!=="auto") dateOpts.timeZone=settings.timezone;
+  $("time").textContent=formatClock();
+  $("date").textContent=d.toLocaleDateString([],dateOpts);
+
+  const h=currentHour();
+  const part=h<12?"Good morning":h<18?"Good afternoon":"Good evening";
+  $("greeting").style.display=settings.greetingEnabled?"block":"none";
+  $("greeting").textContent=settings.name ? `${part}, ${settings.name}.` : `${part}.`;
+  if($("todayClockMode")) $("todayClockMode").textContent=settings.clockFormat==="24h"?"24-hour":"12-hour";
+  applyDayNight();
+}
+updateClock(); setInterval(updateClock,1000);
+
+function weatherLabel(code){
+  if(code===0)return["Clear","☀"];
+  if(code<=3)return["Partly cloudy","☁"];
+  if(code<=48)return["Fog","≋"];
+  if(code<=67)return["Rain","☂"];
+  if(code<=77)return["Snow","❄"];
+  if(code<=82)return["Showers","☂"];
+  if(code<=99)return["Thunderstorm","⚡"];
+  return["Weather","◌"];
+}
+
+async function loadWeather(){
+  $("statusWeather").textContent="Updating";
+  try{
+    const q=settings.weather||defaultSettings.weather;
+    const g=await fetch(`https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&format=json&name=${encodeURIComponent(q)}`).then(r=>r.json());
+    if(!g.results?.length)throw new Error("Location not found");
+    const p=g.results[0];
+
+    const tempParam=settings.tempUnit==="celsius"?"celsius":"fahrenheit";
+    const windParam=settings.windUnit==="kmh"?"kmh":"mph";
+    const w=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${p.latitude}&longitude=${p.longitude}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&temperature_unit=${tempParam}&wind_speed_unit=${windParam}`).then(r=>r.json());
+
+    const c=w.current,[desc,icon]=weatherLabel(c.weather_code);
+    $("city").textContent=[p.name,p.admin1].filter(Boolean).join(", ");
+    $("condition").textContent=desc;
+    $("weatherIcon").textContent=icon;
+    $("temp").textContent=Math.round(c.temperature_2m)+"°";
+    const windLabel=`${Math.round(c.wind_speed_10m)} ${settings.windUnit==="kmh"?"km/h":"mph"}`;
+    $("weatherDetail").textContent=`Feels ${Math.round(c.apparent_temperature)}° • Wind ${windLabel}`;
+    if($("todayLocation")) $("todayLocation").textContent=p.name;
+    if($("todayCondition")) $("todayCondition").textContent=desc;
+    if($("todayFeels")) $("todayFeels").textContent=Math.round(c.apparent_temperature)+"°";
+    if($("todayWind")) $("todayWind").textContent=windLabel;
+    $("statusWeather").textContent="Online";
+  }catch(e){
+    $("condition").textContent="Weather unavailable";
+    $("weatherIcon").textContent="!";
+    $("statusWeather").textContent="Offline";
+  }
+}
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function cleanTitle(t){return String(t||"").replace(/\s*-\s*Associated Press\s*$/i,"").trim()}
+function ago(s){const m=Math.max(0,Math.round((Date.now()-new Date(s))/60000));if(m<60)return`${m}m ago`;const h=Math.round(m/60);if(h<24)return`${h}h ago`;return`${Math.round(h/24)}d ago`}
+
+async function loadNews(){
+  $("statusNews").textContent="Updating";
+  $("newsStatus").textContent="UPDATING";
+  try{
+    const search=settings.newsCategory ? `site:apnews.com ${settings.newsCategory}` : "site:apnews.com";
+    const rss="https://news.google.com/rss/search?q="+encodeURIComponent(search)+"&hl=en-US&gl=US&ceid=US:en";
+    const data=await fetch("https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(rss),{cache:"no-store"}).then(r=>r.json());
+    if(data.status!=="ok"||!data.items?.length)throw new Error("No headlines");
+
+    const items=data.items.slice(0,3);
+    $("newsList").innerHTML=items.map((x,i)=>`
+      <article class="story" data-url="${esc(x.link)}">
+        <div class="story-meta"><span>AP • ${String(i+1).padStart(2,"0")}</span><span>${ago(x.pubDate)}</span></div>
+        <div class="story-title">${esc(cleanTitle(x.title))}</div>
+        <div class="story-source">Associated Press</div>
+      </article>`).join("");
+
+    document.querySelectorAll(".story").forEach(el=>el.onclick=()=>window.open(el.dataset.url,"_blank","noopener,noreferrer"));
+    $("ticker").textContent=cleanTitle(items[0].title);
+    $("statusNews").textContent="Online";
+    $("newsStatus").textContent="LIVE";
+  }catch(e){
+    $("newsList").innerHTML='<div class="error">AP headlines are temporarily unavailable.<br>ELARA will retry automatically.</div>';
+    $("statusNews").textContent="Offline";
+    $("newsStatus").textContent="RETRYING";
+  }
+}
+
+
+function renderModule(){
+  const spotify=settings.mainModule==="spotify";
+  $("spotifyModule").classList.toggle("hidden",!spotify);
+  $("newsModule").classList.toggle("hidden",spotify);
+  $("sectionTitle").textContent=spotify?"Spotify":"AP News Briefing";
+  $("footerLabel").textContent=spotify?"NOW PLAYING":"BREAKING";
+  if($("statusModule")) $("statusModule").textContent=spotify?"Spotify":"AP News";
+  if(spotify) loadSpotifyPlayback();
+  else loadNews();
+}
+
+function scheduleNews(){
+  if(newsTimer) clearInterval(newsTimer);
+  newsTimer=setInterval(loadNews,Math.max(5,Number(settings.newsRefresh)||10)*60*1000);
+}
+
+function setSegmented(name,value){
+  document.querySelectorAll(`[data-setting="${name}"]`).forEach(b=>b.classList.toggle("active",b.dataset.value===value));
+}
+function setChoice(name,value){
+  document.querySelectorAll(`[data-choice="${name}"] .choice-btn`).forEach(b=>b.classList.toggle("active",String(b.dataset.value)===String(value)));
+}
+function getChoice(name,fallback){
+  return document.querySelector(`[data-choice="${name}"] .choice-btn.active`)?.dataset.value ?? fallback;
+}
+
+function loadSettingsUI(){
+  $("nameInput").value=settings.name;
+  $("greetingEnabled").checked=settings.greetingEnabled;
+  $("showSeconds").checked=settings.showSeconds;
+  $("leadingZero").checked=settings.leadingZero;
+  $("weatherInput").value=settings.weather;
+  $("animationsEnabled").checked=settings.animationsEnabled;
+  $("panelTransparency").value=settings.panelTransparency;
+  $("spotifyClientIdInput").value=settings.spotifyClientId||"";
+  $("spotifyRedirectUri").textContent=spotifyRedirectUri();
+  setSegmented("clockFormat",settings.clockFormat);
+  setSegmented("tempUnit",settings.tempUnit);
+  setSegmented("windUnit",settings.windUnit);
+  setChoice("profile",settings.profile);
+  setChoice("timezone",settings.timezone);
+  setChoice("newsCategory",settings.newsCategory);
+  setChoice("newsRefresh",String(settings.newsRefresh));
+  setChoice("theme",settings.theme);
+  setChoice("dayNightMode",settings.dayNightMode);
+  setChoice("mainModule",settings.mainModule);
+}
+
+function collectSettingsUI(){
+  settings.name=$("nameInput").value.trim();
+  settings.profile=getChoice("profile",settings.profile);
+  settings.greetingEnabled=$("greetingEnabled").checked;
+  settings.showSeconds=$("showSeconds").checked;
+  settings.leadingZero=$("leadingZero").checked;
+  settings.timezone=getChoice("timezone",settings.timezone);
+  settings.weather=$("weatherInput").value.trim()||defaultSettings.weather;
+  settings.newsCategory=getChoice("newsCategory",settings.newsCategory);
+  settings.newsRefresh=Number(getChoice("newsRefresh",settings.newsRefresh));
+  settings.theme=getChoice("theme",settings.theme);
+  settings.dayNightMode=getChoice("dayNightMode",settings.dayNightMode);
+  settings.animationsEnabled=$("animationsEnabled").checked;
+  settings.panelTransparency=Number($("panelTransparency").value);
+  settings.spotifyClientId=$("spotifyClientIdInput").value.trim();
+  settings.mainModule=getChoice("mainModule",settings.mainModule);
+}
+
+function applyProfile(profile){
+  if(profile==="gaming"){
+    settings.theme="eclipse";
+    settings.clockFormat="24h";
+    settings.showSeconds=false;
+    settings.dayNightMode="night";
+    settings.animationsEnabled=true;
+  }else if(profile==="work"){
+    settings.theme="arctic";
+    settings.clockFormat="24h";
+    settings.showSeconds=false;
+    settings.dayNightMode="auto";
+    settings.animationsEnabled=false;
+    settings.newsCategory="world";
+  }else if(profile==="night"){
+    settings.theme="lunar";
+    settings.clockFormat="24h";
+    settings.showSeconds=false;
+    settings.dayNightMode="night";
+    settings.animationsEnabled=false;
+  }
+}
+
+document.querySelectorAll(".segmented button").forEach(btn=>{
+  btn.onclick=()=>{
+    const name=btn.dataset.setting,val=btn.dataset.value;
+    setSegmented(name,val);
+  };
+});
+
+document.querySelectorAll("[data-choice] .choice-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    const group=btn.closest("[data-choice]").dataset.choice;
+    setChoice(group,btn.dataset.value);
+    if(group==="profile"){
+      settings.profile=btn.dataset.value;
+      applyProfile(settings.profile);
+      loadSettingsUI();
+    }
+    if(group==="theme"){
+      settings.theme=btn.dataset.value;
+      applyTheme();
+    }
+  };
+});
+
+document.querySelectorAll(".settings-tab").forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll(".settings-tab").forEach(t=>t.classList.toggle("active",t===tab));
+    document.querySelectorAll(".settings-pane").forEach(p=>p.classList.remove("active"));
+    $("pane-"+tab.dataset.pane).classList.add("active");
+  };
+});
+
+
+
+function openSettingsPane(pane){
+  loadSettingsUI();
+  $("settings").classList.add("open");
+  document.querySelectorAll(".settings-tab").forEach(t=>t.classList.toggle("active",t.dataset.pane===pane));
+  document.querySelectorAll(".settings-pane").forEach(p=>p.classList.remove("active"));
+  $("pane-"+pane)?.classList.add("active");
+}
+
+async function pasteInto(inputId){
+  try{
+    const text=await navigator.clipboard.readText();
+    if(text!=null) $(inputId).value=text.trim();
+  }catch(e){
+    // Clipboard API can be restricted inside embedded browsers; manual paste still works.
+    $(inputId).focus();
+  }
+}
+function promptEdit(inputId,label){
+  const el=$(inputId);
+  const v=window.prompt(label,el.value||"");
+  if(v!==null) el.value=v;
+}
+$("editNameBtn").onclick=()=>promptEdit("nameInput","Name used in greeting:");
+$("editWeatherBtn").onclick=()=>promptEdit("weatherInput","Weather location:");
+$("pasteNameBtn").onclick=()=>pasteInto("nameInput");
+$("pasteWeatherBtn").onclick=()=>pasteInto("weatherInput");
+
+
+$("pasteSpotifyClientBtn").onclick=()=>pasteInto("spotifyClientIdInput");
+$("copyRedirectBtn").onclick=async()=>{
+  try{await navigator.clipboard.writeText(spotifyRedirectUri());$("copyRedirectBtn").textContent="Copied";setTimeout(()=>$("copyRedirectBtn").textContent="Copy",1000)}catch(e){}
+};
+$("spotifySetupBtn").onclick=()=>openSettingsPane("mediapane");
+$("spotifyConnectBtn").onclick=beginSpotifyLogin;
+$("settingsConnectSpotifyBtn").onclick=()=>{collectSettingsUI();localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));beginSpotifyLogin()};
+$("settingsDisconnectSpotifyBtn").onclick=disconnectSpotify;
+$("spotifyDisconnectBtn").onclick=disconnectSpotify;
+$("spotifyRefreshBtn").onclick=loadSpotifyPlayback;
+$("spotifyRefreshIdleBtn").onclick=loadSpotifyPlayback;
+$("prevTrackBtn").onclick=()=>spotifyCommand("/me/player/previous");
+$("nextTrackBtn").onclick=()=>spotifyCommand("/me/player/next");
+$("playPauseBtn").onclick=()=>spotifyCommand(spotifyPlayback?.is_playing?"/me/player/pause":"/me/player/play","PUT");
+$("shuffleBtn").onclick=()=>spotifyCommand("/me/player/shuffle?state="+(!spotifyPlayback?.shuffle_state),"PUT");
+$("repeatBtn").onclick=()=>{
+  const next=spotifyPlayback?.repeat_state==="context"?"off":"context";
+  spotifyCommand("/me/player/repeat?state="+next,"PUT");
+};
+$("progressBar").onclick=e=>{
+  if(!spotifyPlayback?.item)return;
+  const r=$("progressBar").getBoundingClientRect();
+  const ratio=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+  spotifyCommand("/me/player/seek?position_ms="+Math.round(ratio*spotifyPlayback.item.duration_ms),"PUT");
+};
+
+["nameInput","weatherInput"].forEach(id=>{
+  const el=$(id);
+  ["keydown","keyup","keypress"].forEach(ev=>el.addEventListener(ev,e=>e.stopPropagation()));
+});
+
+$("settingsBtn").onclick=()=>{loadSettingsUI();$("settings").classList.add("open")};
+$("closeSettings").onclick=()=>$("settings").classList.remove("open");
+$("closeSettingsX").onclick=()=>$("settings").classList.remove("open");
+
+$("saveSettings").onclick=()=>{
+  const selectedClock=document.querySelector('[data-setting="clockFormat"].active')?.dataset.value||settings.clockFormat;
+  const selectedTemp=document.querySelector('[data-setting="tempUnit"].active')?.dataset.value||settings.tempUnit;
+  const selectedWind=document.querySelector('[data-setting="windUnit"].active')?.dataset.value||settings.windUnit;
+
+  collectSettingsUI();
+  settings.clockFormat=selectedClock;
+  settings.tempUnit=selectedTemp;
+  settings.windUnit=selectedWind;
+
+  localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));
+  $("settings").classList.remove("open");
+  applyTheme();applyMotion();applyDayNight();updateClock();
+  loadWeather();renderModule();loadNews();scheduleNews();scheduleSpotify();
+};
+
+document.querySelectorAll(".theme").forEach(b=>b.onclick=()=>{
+  settings.theme=b.dataset.theme;
+  setChoice("theme",settings.theme);
+  applyTheme();
+});
+
+applyTheme();
+applyMotion();
+applyDayNight();
+
+setTimeout(()=>$("boot").classList.add("hide"),2200);
+loadWeather();renderModule();loadNews();scheduleNews();scheduleSpotify();
+setInterval(loadWeather,30*60*1000);
+</script>
+</body>
+</html>
